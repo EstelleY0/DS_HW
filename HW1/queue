@@ -1,0 +1,115 @@
+
+"""
+3-1. (10 points) 다음 슬라이드의 코드를 참고하여 array (Python list) 기반의 queue를 구현하고
+임의의 샘플 데이터에 대해 각 연산이 동작한다는 것을 캡처화면으로 보이시오.
+"""
+def add(item):
+    q.append(item)
+    
+def remove():
+    if len(q) != 0:
+        item = q.pop(0)
+        return item
+    
+def print_q():
+    print('front -> ', end='')
+    for i in range(len(q)):
+        print('{!s:<8}'.format(q[i]), end='')
+    print(' <- rear')
+    
+q = []
+
+# Add
+add('first')
+add('second')
+add('third')
+print('after add: |t', end='')
+print_q()
+add('fourth')
+print('after add: |t', end='')
+print_q()
+
+# Remove
+remove()
+print('after remove: |t', end='')
+print_q()
+remove()
+print('after remove: |t', end='')
+print_q()
+
+
+"""
+3-2. (10 points) 다음 슬라이드의 코드를 참고하여 linked list 기반의 queue를 구현하고
+임의의 샘플 데이터에 대해 각 연산이 동작한다는 것을 캡처화면으로 보이시오.
+"""
+
+class Node:
+    #initiate
+    def __init__(self, item):
+        self.item = item
+        self.next = None
+    
+def add(item):
+    global size
+    global front
+    global rear
+    temp = Node(item)
+    #empty case
+    if rear == None:
+        front = rear = temp
+    #non-empty case
+    else:
+        rear.next = temp
+        rear = temp
+    size += 1
+    
+def remove():
+    global size
+    global front
+    global rear
+    #non-empty case
+    if size != 0:
+        fitem = front.item
+        front = front.next
+        size -= 1
+        if size == 0:
+            rear = None
+        return fitem
+    #empty case
+    return None
+    
+def print_q():
+    global front
+    #start from front
+    p = front
+    print('front: ', end='')
+    #just before rear
+    while p.next:
+        print(p.item, ' -> ', end='')
+        p = p.next
+    #print rear
+    print(p.item, ' :rear')
+    
+
+front = None
+rear = None
+size = 0
+
+# Add
+add('first')
+add('second')
+add('third')
+print('after add: ', end='')
+print_q()
+add('fourth')
+print('after add: ', end='')
+print_q()
+
+# Remove
+remove()
+print('after remove: ', end='')
+print_q()
+remove()
+print('after remove: ', end='')
+print_q()
+
