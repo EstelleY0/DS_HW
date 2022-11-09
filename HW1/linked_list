@@ -1,0 +1,235 @@
+
+"""
+1-1. (10 points) 다음 슬라이드의 코드를 참고하여 singly linked list를 구현하고 
+임의의 샘플 데이터에 대해 각 연산이 동작한다는 것을 캡처화면으로 보이시오
+"""
+
+class SList:
+    class Node:
+        def __init__(self, item, link):
+            self.item = item
+            self.next = link
+            
+    def __init__(self):
+        self.head = None
+        self.size = 0
+    
+    def size(self): return self.size
+    def is_empty(self): return self.size == 0
+    
+    def insert_front(self, item):
+        #empty case
+        if self.is_empty():
+            self.head = self.Node(item,None)
+        #non-empty case
+        else:
+            self.head = self.Node(item, self.head)
+        self.size += 1
+        
+    def insert_after(self, item, p):
+        #empty case
+        if self.is_empty():
+            self.head = self.Node(item,None)
+        #non-empty case
+            p.next = SList.Node(item, p.next)
+        self.size += 1
+        
+    def delete_front(self):
+        #empty case
+        if self.is_empty():
+            raise EmptyError('Underflow')
+        #non-empty case
+        else:
+            self.head = self.head.next
+            self.size -=1
+            
+    def delete_after(self, p):
+        #empty case
+        if self.is_empty():
+            raise EmptyError('Underflow')
+        #non-empty case
+        else:
+            t = p.next
+            p.next = t.next
+            self.size -= 1
+        
+    def search(self, target):
+        #start from head 
+        p = self.head
+        for k in range(self.size):
+            if target == p.item:
+                return k
+            p = p.next
+        # if not found
+        return None
+  
+    def print_list(self):
+        #start from head
+        p = self.head
+        #while p is not None
+        while p:
+            if p.next != None:
+                print(p.item, ' -> ', end='')
+            else:
+                print(p.item)
+            p = p.next
+            
+class EmptyError(Exception):
+    pass
+
+# Declaration of singly linked list
+l_list = SList()
+
+# Insert
+l_list.insert_front('first')                # insert front
+print('after insert front: ', end='')
+l_list.print_list()
+l_list.insert_front('second')               # insert front
+print('after insert front: ', end='')
+l_list.print_list()
+l_list.insert_after('third', l_list.head)   # insert after
+print('after insert after: ', end='')
+l_list.print_list()
+
+# Search
+print('the node of "first": ', end='')
+print(l_list.search('first'))              # search existing item
+print('the node of "fifth": ', end='')
+print(l_list.search('fifth'))              # search non-existing item
+
+# Delete
+l_list.delete_front()                      # delete front
+print('after delete front: ', end='')
+l_list.print_list()
+l_list.delete_after(l_list.head)           # delete after
+print('after delete after: ', end='')
+l_list.print_list()
+
+# Is empty
+print('is linked list empty? ', end='')
+print(l_list.is_empty())                   # non-empty case
+l_list.delete_front()
+print('is linked list empty? ', end='')
+print(l_list.is_empty())                   # empty case
+
+# EmptyError-Underflow
+l_list.delete_front()                      # delete from empty linked list for Error
+
+
+
+"""
+1-2. (10 points) 다음 슬라이드의 코드를 참고하여 doubly linked list를 구현하고
+임의의 샘플 데이터에 대해 각 연산이 동작한다는 것을 캡처화면으로 보이시오.
+"""
+
+class DList:
+    class Node(object):
+        #initiate with prev, next as None type
+        def __init__(self, data, prev=None, next=None):
+            self.prev = prev
+            self.next = next
+            self.data = data
+    
+    def __init__(self):
+        self.head = None
+        self.tail = self.head
+        self.size = 0
+    
+    def size(self): return self.size
+    def is_empty(self): return self.size == 0
+    
+    def insert_before(self, p, data):
+        # insert when empty list
+        if self.head is None:
+            #make node
+            self.head = self.Node(data)
+            #link
+            self.head.next = self.tail
+        # if not empty
+        else:
+            node = p
+            new_node = self.Node(data, next = node)
+            node.prev = new_node
+            p = new_node
+        self.size += 1
+            
+    def insert_after(self, p, data):
+        # insert when empty list
+        if self.head is None:
+            #make node
+            self.head = self.Node(data)
+            #link
+            self.head.next = self.tail
+        # if not empty
+        else:
+            node = p
+            new_node = self.Node(data, prev = node, next = node.next)
+            node.next = new_node
+            p = new_node
+        self.size += 1
+
+    def delete(self, tmp):
+        # case of empty
+        if self.is_empty():
+            raise EmptyError('Underflow')
+        # case of non-empty
+        else:
+            # delete head
+            if tmp == self.head:
+                tmp = self.head
+                self.head = self.head.next
+            # delete tail
+            elif tmp == self.tail:
+                tmp = self.tail
+                self.tail = self.tail.prev
+            # delete node (not head/tail)
+            else:
+                tmp.prev.next = tmp.next
+                tmp.next.prev = tmp.prev
+            del(tmp)
+            self.size -= 1
+
+    def print_list(self):
+        # start from head
+        node = self.head
+        while node != self.tail:
+            if node.next != self.tail:
+                print(node.data, '<=> ', end='')
+            else:
+                print(node.data)
+            # update the node
+            node = node.next
+
+    class EmptyError(Exception):
+        pass
+    
+# Declaration of doubly linked list
+D_list = DList()
+
+# Insert
+D_list.insert_before(D_list.tail, 'first')
+D_list.insert_after(D_list.head, 'second')
+print('after insert: ', end='')
+D_list.print_list()
+D_list.insert_after(D_list.head, 'third')
+print('after insert: ', end='')
+D_list.print_list()
+
+# Delete
+D_list.delete(D_list.head.next)
+print('after delete: ', end='')
+D_list.print_list()
+D_list.delete(D_list.head)
+print('after delete: ', end='')
+D_list.print_list()
+
+# Is empty
+print('is Empty?: ', end='')
+print(D_list.is_empty())
+D_list.delete(D_list.head)
+print('is Empty?: ', end='')
+print(D_list.is_empty())
+
+# EmptyError-Underflow
+print('underflow error')
+D_list.delete(D_list.head)
