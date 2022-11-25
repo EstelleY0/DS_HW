@@ -1,0 +1,244 @@
+"""
+Class BST: class to genrate Binary Search Tree,
+           which has left child for value smaller than parents',
+           and right child for value bigger than parents'
+Functions 1) get(self, key)
+             function to search for key,
+             return the value of key pair, if found
+       
+             input:        key
+             input type:   int
+             return:       value of pair key
+             return type:  int
+          
+           2) get_item(self, n, k)
+              funtion to get value of pair key
+              if k in bst, return the value of k node
+              if not, return None
+
+             input:        n,    k
+             input type:   Node, int
+             return:       value of key pair
+             return type:  int
+                
+           3) put(self, key, value)
+              funtion to put key, value pair in BST
+                              
+             input:       key, value
+             input type:  int, int
+                
+           4) put_item(self, n, key, value)
+              function to mak node and link to put key, value pair in BST
+                              
+             input:       n,    key, value
+             input type:  Node, int, int
+             return:      Node to put item in
+             return type: Node
+        
+           5) delete(self, k)
+             function to delete k
+                              
+             input:       k
+             input type:  int
+        
+           6) del_node(self, n, k)
+             funtion to delete the node and raorganize the BST
+                              
+             input:       n,    k
+             input type:  Node, int
+             return:      Node or None
+             return type: Node, or None type
+         
+           7) min(self)
+             funtion to find the node that has minimum value
+                              
+             return:      Node or None
+             return type: Node or NOne type
+                
+           8) minimum(self, n)
+             funtion to find the node which is in most left side
+                              
+             input:       n
+             input type:  Node
+             return:      Node which has minimum value
+             return type: Node
+                
+           9) delete_min(self)
+             function to delete minimum
+                
+           10) del_min(self, n)
+             function to find the node to replace the minimum
+                              
+             input:       n
+             input type:  Node
+             return:      Node which has 2nd smallest value
+             return type: Node
+                
+            11) preorder(self, n)
+             function to print out the result of traversal in preorder
+                              
+             input:       n
+             input type:  Node
+                
+            12) postorder(self, n)
+             function to print out the result of traversal in postorder
+          
+             input:       n
+             input type:  Node
+                
+            13) inorder(self, n)
+              function to print out the result of traversal in inorder
+                              
+             input:       n
+             input type:  Node
+                
+            14) levelorder(self, n)
+             function to print out the result of traversal in levelorder
+                              
+             input:       n
+             input type:  Node
+                
+"""
+
+
+
+class Node:
+
+        def __init__(self, key, value, left=None, right=None):
+            #initiation of Node
+            self.key = key
+            self.value = value
+            self.left = left
+            self.right = right
+
+class BST:
+    def __init__(self):
+        #initiation of the tree
+        self.root = None
+    
+    def get(self, key):
+        #find the key
+        return self.get_item(self.root, key)
+    
+    def get_item(self, n, k):
+        if n == None:
+            #fail to get item
+            return None
+        if n.key > k:
+            #if k node is smaller, do same for left subtree
+            return self.get_item(n.left, k)
+        elif n.key < k:
+            #if k node is bigger, do same for right subtree
+            return self.get_item(n.right, k)
+        else:
+            #get item
+            return n.value
+
+    def put(self, key, value):
+        #insert new value 
+        self.root= self.put_item(self.root, key, value)
+        
+    def put_item(self, n, key, value):
+        if n == None:
+            #if tree is empty
+            return Node(key, value)
+        else:
+            if n.key > key:
+                #if smaller
+                n.left = self.put_item(n.left, key, value)
+            elif n.key < key:
+                #if bigger
+                n.right = self.put_item(n.right, key, value)
+            else:
+                n.value = value
+        return n
+    
+    def delete(self, k):
+        #delete k
+        self.root = self.del_node(self.root, k)
+        
+    def del_node(self, n, k):
+        if n == None:
+            #not exist
+            return None
+        if n.key > k:
+            #if smaller
+            n.left = self.del_node(n.left, k)
+        elif n.key < k:
+            #if bigger
+            n.right = self.del_node(n.right, k)
+        else:
+            #replace after deletion
+            #with one child
+            if n.right == None:
+                return n.left
+            if n.left == None:
+                return n.right
+            #with two children
+            #replace with the inorder successor
+            target = n
+            n = self. minimum(target.right)
+            n.right = self.del_min(target.right)
+            n.left = target.left
+        return n
+    
+    def min(self):
+        if self.root == None:
+            return None
+        return self.minimum(self.root)
+    
+    def minimum(self, n):
+        if n.left == None:
+            return n
+        return self.minimum(n.left)
+    
+    def delete_min(self):
+        if self.root == None:
+            print("empty tree")
+        self.root = self.del_min(self.root)
+        
+    def del_min(self, n):
+        if n.left == None:
+            return n.right
+        n.left = self.del_min(n.left)
+        return n
+    
+    def preorder(self, n):
+        #traverse in preorder
+        if n != None:
+            print(str(n.value), ' ', end='')
+        if n.left:
+            self.preorder(n.left)
+        if n.right:
+            self.preorder(n.right)
+    
+    def postorder(self, n):
+        #traverse in postorder
+        if n:
+            self.postorder(n.left)
+            self.postorder(n.right)
+            print(str(n.value), ' ', end='')
+    
+    def inorder(self, n):
+        #traverse in order
+        if n != None:
+            if n.left:
+                self.inorder(n.left)
+            print(str(n.value), ' ', end='')
+            if n.right:
+                self.inorder(n.right)
+        
+    def levelorder(self, root):
+        #traverse in level order
+        q = []
+        q.append(root)
+        while len(q) != 0:
+            t = q.pop(0)
+            if t == None:
+                continue
+            print(str(t.value), ' ', end='')
+            if t.left != None:
+                q.append(t.left)
+            if t.right != None:
+                q.append(t.right)
+                
