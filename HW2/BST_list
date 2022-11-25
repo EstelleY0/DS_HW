@@ -1,0 +1,258 @@
+"""
+Functions 1) get(k)
+            function to search for k,
+            if k in bst return k,
+            if not, return None
+            
+            input:       k
+            input type:  int
+            return:      k or None
+            return type: int or None type
+
+          2) put(k)
+            function to put k in bst
+            
+            input:       [k, v]
+            input type:  list of int
+
+          3) delete(k)
+            function to delete k and reorganize BST
+            
+            input:       k
+            input type:  int
+
+          4) replace(i)
+            function to replace after deletetion,
+            when onlyone child exist
+            i is the index of the root of the sub tree ro replace
+            
+            input:       i
+            input type:  int
+          
+          5) find_min(i)
+            function to find min of sub tree whose root index is i
+            used to find successor
+            
+            input:       i
+            input type:  int
+          
+          6) preorder()
+            function to print out the result of preorder
+            performed by using queue
+
+          7) postorder()
+            function to print out the result of postorder
+            performed by using queue
+
+          8) inorder()
+            function to print out the result of inorder,
+            not really traverse and print out bst in order,
+            just use that result of inorder traversal is sorted in order
+
+          9) levelorder()
+            function to print out the result of levelorder
+            not really traverse in level order,
+            cause the bst in list is set in level order
+            with empty node with None type
+
+"""
+
+bst =[]
+
+def get(k):
+    """
+    get the value of k if k is in bst
+    if not, return None
+    """
+    merged = [j for i in bst if i for j in i if j]
+    # if k in bst
+    if k in merged:
+        # return k
+        return k
+    # if k not in bst
+    else:
+        return None
+
+def put(k_v):
+    """
+    put k_v which is list of key and value in bst
+    """
+    global bst
+    l_bst = len(bst)
+    i_bst = 0
+    # initiating bst
+    if l_bst == 0:
+        bst = [k_v]
+        return None
+    # without increasing size
+    while i_bst < l_bst:
+        # if found right place to put
+        if bst[i_bst] is None:
+            bst[i_bst] = k_v
+            return None
+        # if bigger
+        if bst[i_bst][0] < k_v[0]:
+            # go to right child
+            i_bst = 2*i_bst + 2
+            continue
+        # if smaller
+        elif bst[i_bst][0] > k_v[0]:
+            # go to left child
+            i_bst = 2*i_bst + 1
+            continue
+    # with increasing size
+    bst += [None for _ in range(l_bst + 1)]
+    bst[i_bst] = k_v
+    return None
+    
+
+def delete(k):
+    """
+    delete k if k is in bst,
+    if not, return None
+    """
+    # if k not in bst
+    if [k, k] not in bst:
+        return None
+    # if k in bst
+    else:
+        i_k = bst.index([k, k])
+        # if no child
+        if (2*i_k+3 > len(bst)) or (bst[2*i_k+1] == None and bst[2*i_k+2] == None):
+            # just remove
+            bst[i_k] = None
+        # if only left child exist
+        elif (bst[2*i_k+1] and bst[2*i_k+2] == None):
+            replace(2*i+1)
+        # if only right child exist
+        elif (bst[2*i_k+1] == None and bst[2*i_k+2]):
+            replace(2*i+2)
+        # if both exist
+        else:
+            bst[i_k] = bst[find_min(2*i_k+2)]
+            bst[find_min(2*i_k+2)] = None
+            
+def replace(i):
+    """
+    replace the sub tree, whose root index is i
+    """
+    list_ind = []
+    l_k = i
+    right_end = i
+    left_end = i
+    # make a list of subtree's index
+    while right_end < len(bst):
+        if left_end == right_end:
+            left_end = 2*i+1
+            right_end = 2*i+2
+            continue
+        list_ind.append(left_end)
+        list_ind.append(right_end)
+        left_end = 2*left_end + 1
+        right_end = 2*right_end + 2
+    # replace all vals in left tree
+    if i%2 == 1:
+        for i in range(int(len(list_ind)/2)):
+            for j in range(list_ind[2*i], list_ind[2*i+1]):
+                bst[j//2] = bst[j]
+                bst[j] = None
+    # replace all vals in right tree
+    else:
+        for i in range(int(len(list_ind)/2)):
+            for j in range(list_ind[2*i], list_ind[2*i+1]):
+                bst[j//2 -1] = bst[j]
+                bst[j] = None
+    
+def find_min(i):
+    """
+    find successor of the sub tree, whose root index is i
+    """
+    # if leaf is found
+    if 2*i+1 > len(bst) or bst[2*i+1] == None:
+        return i
+    # if not
+    elif 2*i+1 < len(bst) and bst[2*i+1]:
+        return find_min(2*i+1)
+
+def preorder():
+    """
+    traverse in preorder
+    by using a queue, print out left and stock right in Q, 
+    and repeat traverse for element in Q in same way
+    """
+    # make Q to stock the regression point
+    Q = []
+    # start from root
+    ind = 0
+    # repeat till traverse all elements
+    while 2*ind+3 < len(bst) or len(Q) != 0:
+        # index is in bst
+        if ind+1 < len(bst):
+            # print
+            if bst[ind]:
+                print(bst[ind][0], ' ', end='')
+            # stock right child
+            Q.append(2*ind+2)
+            # go to left
+            ind = 2*ind+1
+        # no left children are left
+        else:
+            # go to right child by using Q
+            ind = Q.pop()
+
+def postorder():
+    """
+    traverse in postorder
+    by using queue, raverse in inverse-postorder
+    and print it in postorder
+    """
+    # initiate Queue
+    Q = [0]
+    ind = 0
+    # untill the left end
+    while ind != len(bst)//2:
+        # stock index of right child
+        if ind < len(bst)//2:
+            ind = 2*ind+2
+            if ind not in Q:
+                Q.append(ind)
+        # if no more right child left
+        else:
+            # for all right children stored
+            for i in Q[::-1]:
+                # go left and store left children
+                if (not 2*i+1 in Q) and (2*i+1 < len(bst)):
+                    ind = 2*i+1
+                    Q.append(ind)
+                    break
+    Q += [len(bst)//2]
+
+    for i in Q[::-1]:
+        if bst[i]:
+            print(bst[i][0], ' ', end='')
+
+
+def inorder():
+    """
+    return the traversal result of inorder
+    not really traverse, just return bst inorder, cause it's smae
+    """
+    # get rid of None
+    bst_mod = [i for i in bst if i]
+    # make in order
+    bst_mod.sort()
+    # print
+    for i in bst_mod:
+        print(i[0], ' ', end='')
+
+def levelorder():
+    """
+    return the traversal result of levelorder
+    not really traverse, just return bst, as bst is set in levelorder
+    """
+    # print
+    for i in bst:
+        # if not None
+        if i:
+            print(i[0], ' ', end ='')
+    print()
